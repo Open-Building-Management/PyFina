@@ -56,7 +56,7 @@ With the above code, the xrange will be expressed in hour, so 192 points will be
 
 ![](test.png)
 
-If you want to express the xrange in seconds :
+To express the xrange in seconds :
 ```
 xrange = Text.timescale()
 plt.subplot(111)
