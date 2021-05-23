@@ -38,7 +38,7 @@ To retrieve metadatas for feed number 1 :
 ```
 from PyFina import getMeta, PyFina
 import matplotlib.pylab as plt
-
+# classic emoncms feed storage on linux
 dir = "/var/opt/emoncms/phpfina"
 meta = getMeta(1,dir)
 print(meta)
