@@ -27,5 +27,7 @@ if window > length:
 nbpts = window // step
 Text = PyFina(1,dir,start,step,nbpts)
 plt.subplot(111)
+plt.ylabel("outdoor Temp °C")
+plt.xlabel("time in hours")
 plt.plot(Text)
 plt.show()
