@@ -9,6 +9,11 @@ ces commandes créent un répertoire dist contenant un fichier tar.gz (sources) 
 
 # pour envoyer le fichier sur pypi.org
 
+on a besoin du package twine :
+```
+python3 -m pip install --user --upgrade twine
+```
+
 le plus pratique est de créer un fichier `.pypirc` dans son home, avec le contenu suivant : 
 ```
 [pypi]
