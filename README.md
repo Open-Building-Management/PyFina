@@ -10,7 +10,7 @@ addition, soustraction, multiplication, division, min, max, mean, sum, slicing w
 Note : any operation on a PyFina object results to a standard numpy nd.array object. 
 The signature of the PyFina object is lost.
 
-It does not prevent to add to PyFina objects of the same size but sampler with different intervals
+It does not prevent to add two PyFina objects of the same size but sampled with different intervals
 
 
 ## Installation
