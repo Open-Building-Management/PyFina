@@ -7,6 +7,14 @@ PyFina is a subclass of numpy np.ndarray to import emoncms PHPFINA feeds as nump
 ```
 python3 -m pip install PyFina
 ```
+or, for python on Windows
+```
+py -m pip install PyFina
+```
+
+## Testing after installation
+
+check [test.py](tests/test.py)
 
 ## Getting Started
 
