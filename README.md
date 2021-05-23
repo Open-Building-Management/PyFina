@@ -64,6 +64,8 @@ print(Text.step)
 To plot:
 ```
 plt.subplot(111)
+plt.ylabel("outdoor Temp °C")
+plt.xlabel("time in hours")
 plt.plot(Text)
 plt.show()
 ```
