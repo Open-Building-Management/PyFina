@@ -12,9 +12,13 @@ or, for python on Windows
 py -m pip install PyFina
 ```
 
-## Testing after installation
+## Post installation testing
 
-check [test.py](tests/test.py)
+copy the content of [test.py](tests/test.py), paste it in a blank file on your local machine and save it using the same name.
+
+```
+py test.py
+```
 
 ## Getting Started
 
