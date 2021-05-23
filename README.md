@@ -32,7 +32,7 @@ dir = "/var/opt/emoncms/phpfina"
 meta = getMeta(1,dir)
 print(meta)
 ```
-To plot the first 8 days of datas, with a sampling interval of 3600 s :
+To import the first 8 days of datas, with a sampling interval of 3600 s :
 
 ```
 step = 3600
@@ -43,6 +43,9 @@ if window > length:
     window = length
 nbpts = window // step
 Text = PyFina(1,dir,start,step,nbpts)
+```
+To plot:
+```
 plt.subplot(111)
 plt.plot(Text)
 plt.show()
@@ -53,9 +56,13 @@ With the above code, the xrange will be expressed in hour, so 192 points will be
 
 If you want to express the xrange in seconds :
 ```
-Text = PyFina(1,dir,start,step,nbpts)
 xrange = Text.timescale()
 plt.subplot(111)
 plt.plot(xrange,Text)
 plt.show()
+```
+To catch the signature of the created PyFina object :
+```
+print(Text.start)
+print(Text.step)
 ```
