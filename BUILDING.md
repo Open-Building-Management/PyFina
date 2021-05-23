@@ -20,3 +20,7 @@ le plus pratique est de créer un fichier `.pypirc` dans son home, avec le conte
 username = __token__
 password = <the token value, including the `pypi-` prefix>
 ```
+pour l'envoi :
+```
+python3 -m twine upload dist/*
+```
