@@ -55,6 +55,12 @@ if window > length:
 nbpts = window // step
 Text = PyFina(1,dir,start,step,nbpts)
 ```
+To catch the signature of the created PyFina object :
+```
+print(Text.start)
+print(Text.step)
+```
+
 To plot:
 ```
 plt.subplot(111)
@@ -72,8 +78,4 @@ plt.subplot(111)
 plt.plot(xrange,Text)
 plt.show()
 ```
-To catch the signature of the created PyFina object :
-```
-print(Text.start)
-print(Text.step)
-```
+
