@@ -2,6 +2,8 @@
 
 PyFina is a subclass of numpy np.ndarray to import emoncms PHPFINA feeds as numpy arrays
 
+The pip installer will install any missing requirements (numpy, matplotlib) 
+
 ## Installation
 
 ```
