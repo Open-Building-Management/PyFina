@@ -46,5 +46,16 @@ Text = PyFina(1,dir,start,step,nbpts)
 plt.subplot(111)
 plt.plot(Text)
 plt.show()
+```
+With the above code, the xrange will be expressed in hour, so 192 points will be displayed
 
+![](test.png)
+
+If you want to express the xrange in seconds :
+```
+Text = PyFina(1,dir,start,step,nbpts)
+xrange = Text.timescale()
+plt.subplot(111)
+plt.plot(xrange,Text)
+plt.show()
 ```
