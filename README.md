@@ -14,7 +14,7 @@ py -m pip install PyFina
 
 ## Post installation testing
 
-copy the content of [test.py](tests/test.py), paste it in a blank file on your local machine and save it using the same name.
+copy the content of [test.py](https://raw.githubusercontent.com/Open-Building-Management/PyFina/main/tests/test.py), paste it in a blank file on your local machine and save it using the same name.
 
 ```
 py test.py
