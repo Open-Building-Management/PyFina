@@ -1,5 +1,7 @@
 # pour construire le package pip
 
+Modifier le numéro de version dans setup.py
+
 ```
 python3 setup.py sdist
 python3 -m pip install wheel
