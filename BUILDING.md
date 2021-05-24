@@ -1,6 +1,6 @@
 # pour construire le package pip
 
-Modifier le numéro de version dans setup.py
+Modifier le numéro de version dans setup.py puis lancer les commandes suivantes :
 
 ```
 python3 setup.py sdist
