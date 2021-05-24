@@ -2,7 +2,7 @@
 
 PyFina is a subclass of numpy np.ndarray to import emoncms PHPFINA feeds as numpy arrays
 
-**The pip installer will install any missing requirements (numpy, matplotlib) **
+**The pip installer will install any missing requirements (numpy, matplotlib)**
 
 PyFina brings the power of numpy to the PHPFINA timeseries, including basic operations and more : 
 addition, soustraction, multiplication, division, min, max, mean, sum, slicing with the bracket operator
