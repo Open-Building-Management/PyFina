@@ -25,7 +25,7 @@ length = meta["npoints"] * meta["interval"]
 if window > length:
     window = length
 nbpts = window // step
-Text = PyFina(1,dir,start,step,nbpts)
+Text = PyFina(feed_nb,dir,start,step,nbpts)
 
 import datetime
 import time
