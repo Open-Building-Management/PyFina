@@ -2,7 +2,7 @@ from PyFina import getMeta, PyFina
 import matplotlib.pylab as plt
 import urllib.request as request
 
-feed_nb = "1"
+feed_nb = 1
 
 def retrieve(feed_nb,extension):
     file_name = "{}.{}".format(feed_nb,extension)
@@ -16,7 +16,7 @@ input("downloads completed :-) press_any_key")
 # feed storage on a standard emoncms server
 # dir = "/var/opt/emoncms/phpfina"
 dir = "."
-meta = getMeta(1,dir)
+meta = getMeta(feed_nb,dir)
 print(meta)
 step = 3600
 start = meta["start_time"]
