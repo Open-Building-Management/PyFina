@@ -4,10 +4,10 @@ PyFina is a subclass of numpy np.ndarray to import emoncms PHPFINA feeds as nump
 
 **The pip installer will install any missing requirements (numpy, matplotlib)**
 
-PyFina brings the power of numpy to the PHPFINA timeseries, including basic operations and more : 
+PyFina brings the power of numpy to the PHPFINA timeseries, including basic operations and more :
 addition, soustraction, multiplication, division, min, max, mean, sum, slicing with the bracket operator
 
-Note : any operation on a PyFina object results to a standard numpy nd.array object. 
+Note : any operation on a PyFina object results to a standard numpy nd.array object.
 The signature of the PyFina object is lost.
 
 It does not prevent to add two PyFina objects of the same size but sampled with different intervals
@@ -63,7 +63,13 @@ print(Text.step)
 
 To plot:
 ```
+import datetime
+import time
+localstart = datetime.datetime.fromtimestamp(start)
+utcstart = datetime.datetime.utcfromtimestamp(start)
+title = "starting on :\nUTC {}\n{} {}".format(utcstart,time.tzname[0],localstart)
 plt.subplot(111)
+plt.title(title)
 plt.ylabel("outdoor Temp °C")
 plt.xlabel("time in hours")
 plt.plot(Text)
@@ -80,4 +86,3 @@ plt.subplot(111)
 plt.plot(xrange,Text)
 plt.show()
 ```
-
