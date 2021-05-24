@@ -57,7 +57,9 @@ Text = PyFina(1,dir,start,step,nbpts)
 ```
 To catch the signature of the created PyFina object :
 ```
+# time start as a unixtimestamp expressed in seconds
 print(Text.start)
+# step/interval in seconds
 print(Text.step)
 ```
 
