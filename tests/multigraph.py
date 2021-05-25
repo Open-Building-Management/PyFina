@@ -16,7 +16,7 @@ epL = 8*24*3600
 def analyse():
     """
     étant donné un dictionnaire de numéros de flux
-    calcule les timestamps de départ et de fin commun à cet ensemble de flux
+    calcule les timestamps de départ et de fin communs à cet ensemble de flux
     """
     starts = []
     ends = []
