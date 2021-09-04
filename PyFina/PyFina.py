@@ -3,6 +3,41 @@ import struct
 import os
 import math
 
+def trim(id, dir, limit=100):
+    """
+    checks and removes anomalies (values above a threshold limit, eg 100)
+    id: feed number
+    dir: feed path (eg /var/opt/emoncms/phpfina)
+    limit: threshold we don't want to exceed
+    """
+    meta = getMeta(id, dir)
+    pos = 0
+    i = 0
+    nbn =0
+    with open("{}/{}.dat".format(dir, id), "rb+") as ts:
+        while pos <= meta["npoints"]:
+            ts.seek(pos*4, 0)
+            hexa = ts.read(4)
+            aa = bytearray(hexa)
+            if len(aa) == 4:
+                value = struct.unpack('<f', aa)[0]
+                if math.isnan(value):
+                    nbn +=1
+                elif value > limit:
+                    print("anomaly detected at {} : {}".format(pos, value))
+                    i += 1
+                    nv = struct.pack('<f', float('nan'))
+                    try:
+                        ts.seek(pos*4,0)
+                        ts.write(nv)
+                    except Exception as e:
+                        print(e)
+                    finally:
+                        print("4 bytes written")
+            pos +=1
+        print("{} anomaly(ies)".format(i))
+        print("{} nan".format(nbn))
+
 def getMeta(id, dir):
     """
     decoding the .meta file
