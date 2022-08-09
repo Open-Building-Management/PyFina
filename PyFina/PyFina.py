@@ -113,7 +113,7 @@ class PyFina(np.ndarray):
                                   break
                           obj[i] = value
                     else:
-                      print("unpacking problem {} len is {} position is {}".format(i,len(aa),position))
+                      print("unpacking problem {} len is {} position is {}".format(i,len(aa),pos))
                 i += 1
         """
         storing the "signature" of the "sampled" feed
