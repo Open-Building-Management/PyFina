@@ -1,2 +1,2 @@
 """PyFina module"""
-from .PyFina import *
+from .PyFina import PyFina, getMeta, trim
