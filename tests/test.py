@@ -5,7 +5,6 @@ import matplotlib
 import matplotlib.pylab as plt
 from PyFina import getMeta, PyFina
 import time
-import urllib.request as request
 
 feed_nb = 1
 data_dir = "./datas"
