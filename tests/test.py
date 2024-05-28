@@ -20,7 +20,7 @@ WINDOW = min(8 * 24 * 3600, length)
 nbpts = WINDOW // STEP
 temp_ext = PyFina(FEED_NB, DATA_DIR, start, STEP, nbpts)
 
-check_starting_nan(temp_ext, "température extérieure")
+check_starting_nan("température extérieure", temp_ext)
 
 localstart = datetime.datetime.fromtimestamp(start)
 utcstart = datetime.datetime.utcfromtimestamp(start)
