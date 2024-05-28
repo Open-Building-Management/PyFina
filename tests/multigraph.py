@@ -52,7 +52,7 @@ start, end, nbpts = analyse()
 
 def check_starting_nan(feed_name, feed):
     """check if feed is starting by nan"""
-    print(f"{feed_name} : {feed.nb_nan} in the feed")
+    print(f"{feed_name} : {feed.nb_nan} nan in the feed")
     if feed.starting_by_nan:
         message = f"first non nan value {feed.first_non_nan_value}"
         message = f"{message} at index {feed.first_non_nan_index}"
