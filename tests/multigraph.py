@@ -10,7 +10,7 @@ from PyFina import getMeta, PyFina
 
 # télécharger le fichier contenant les données de Marc Bloch 2021
 # puis lancer tar -xvf pour décompresser
-dir = "phpfina"
+data_dir = "phpfina"
 feeds = {
     "Text" : 5,
     "TziqNord": 8,
@@ -32,7 +32,7 @@ def analyse():
     starts = []
     ends = []
     for f in feeds:
-        meta = getMeta(feeds[f], dir)
+        meta = getMeta(feeds[f], data_dir)
         if verbose:
             print(meta)
         start = meta["start_time"]
@@ -50,30 +50,30 @@ def analyse():
 
 start, end, nbpts = analyse()
 
-def check_starting_nan(feed):
+def check_starting_nan(feed_name, feed):
     """check if feed is starting by nan"""
+    print(f"{feed_name} : {feed.nb_nan} in the feed")
     if feed.starting_by_nan:
-        print(f"first non nan value {feed.first_non_nan_value}")
-        print(f"at index {feed.first_non_nan_index}")
+        message = f"first non nan value {feed.first_non_nan_value}"
+        message = f"{message} at index {feed.first_non_nan_index}"
+        print(message)
 
 def generate_episode(start_ts):
-    """
-    permet de visualiser un épisode commencant à start_ts
-    """
-    temp_ext = PyFina(feeds["Text"], dir, start_ts, step, nbpts)
-    temp_ziq_nord = PyFina(feeds["TziqNord"], dir, start_ts, step, nbpts)
-    temp_tec_nord = PyFina(feeds["TtecNord"], dir, start_ts, step, nbpts)
-    temp_dep_nord = PyFina(feeds["TdepNord"], dir, start_ts, step, nbpts)
-    temp_ret_nord = PyFina(feeds["TretNord"], dir, start_ts, step, nbpts)
-    all_feeds = (
-        temp_ext,
-        temp_ziq_nord,
-        temp_tec_nord,
-        temp_dep_nord,
-        temp_ret_nord
-    )
-    for feed in all_feeds:
-        check_starting_nan(feed)
+    """visualise un épisode commencant à start_ts"""
+    temp_ext = PyFina(feeds["Text"], data_dir, start_ts, step, nbpts)
+    temp_ziq_nord = PyFina(feeds["TziqNord"], data_dir, start_ts, step, nbpts)
+    temp_tec_nord = PyFina(feeds["TtecNord"], data_dir, start_ts, step, nbpts)
+    temp_dep_nord = PyFina(feeds["TdepNord"], data_dir, start_ts, step, nbpts)
+    temp_ret_nord = PyFina(feeds["TretNord"], data_dir, start_ts, step, nbpts)
+    feed_objects = {
+        "Text": temp_ext,
+        "TziqNord": temp_ziq_nord,
+        "TtecNord": temp_tec_nord,
+        "TdepNord": temp_dep_nord,
+        "TretNord": temp_ret_nord
+    }
+    for feed_name, feed_object in feed_objects.items():
+        check_starting_nan(feed_name, feed_object)
     localstart = datetime.datetime.fromtimestamp(start_ts)
     utcstart = datetime.datetime.utcfromtimestamp(start_ts)
     title = f"starting on : UTC {utcstart}\n{time.tzname[0]} {localstart}"
@@ -97,9 +97,11 @@ def generate_episode(start_ts):
     plt.legend(loc='upper right')
     figure.savefig(f"bloch_{start_ts}.png")
 
-if end - episode_length > start :
+if (end - episode_length) > start :
     for _ in range(10):
         start_ts = random.randrange(start, end - episode_length)
+        print(start_ts)
         generate_episode(start_ts)
 else :
+    print(start)
     generate_episode(start)

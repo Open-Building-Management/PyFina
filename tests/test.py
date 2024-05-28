@@ -8,8 +8,8 @@ import time
 import urllib.request as request
 
 feed_nb = 1
-dir = "./datas"
-meta = getMeta(feed_nb, dir)
+data_dir = "./datas"
+meta = getMeta(feed_nb, data_dir)
 print(meta)
 step = 3600
 start = meta["start_time"]
@@ -18,7 +18,7 @@ length = meta["npoints"] * meta["interval"]
 if window > length:
     window = length
 nbpts = window // step
-Text = PyFina(feed_nb, dir, start, step, nbpts)
+Text = PyFina(feed_nb, data_dir, start, step, nbpts)
 
 if Text.starting_by_nan:
     print(f"first non nan value {Text.first_non_nan_value}")

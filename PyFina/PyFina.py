@@ -121,6 +121,7 @@ class PyFina(np.ndarray):
         """
         obj.start = start
         obj.step = step
+        obj.nb_nan = nb_nan
         obj.first_non_nan_value = first_non_nan_value
         obj.first_non_nan_index = first_non_nan_index
         obj.starting_by_nan = starting_by_nan
