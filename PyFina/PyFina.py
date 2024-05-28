@@ -107,7 +107,7 @@ class PyFina(np.ndarray):
         first_non_nan_index = -1
         if nb_nan < npts:
             finiteness_obj = np.isfinite(raw_obj)
-            first_non_nan_index = np.where(if finiteness_obj:)[0][0]
+            first_non_nan_index = np.where(finiteness_obj)[0][0]
             first_non_nan_value = raw_obj[finiteness_obj][0]
         starting_by_nan = np.isnan(raw_obj[0])
         if starting_by_nan and remove_nan:
