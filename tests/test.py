@@ -1,17 +1,17 @@
 from PyFina import getMeta, PyFina
+import matplotlib
 import matplotlib.pylab as plt
 import urllib.request as request
 
 feed_nb = 1
 
 def retrieve(feed_nb,extension):
-    file_name = "{}.{}".format(feed_nb,extension)
-    url = "https://raw.githubusercontent.com/Open-Building-Management/PyFina/master/tests/datas/{}".format(file_name)
+    file_name = f"{feed_nb}.{extension}"
+    url = f"https://raw.githubusercontent.com/Open-Building-Management/PyFina/master/tests/datas/{file_name}"
     request.urlretrieve(url, file_name)
 print("downloading some datas for testing....")
 retrieve(feed_nb,"dat")
 retrieve(feed_nb,"meta")
-input("downloads completed :-) press_any_key")
 
 # feed storage on a standard emoncms server
 # dir = "/var/opt/emoncms/phpfina"
@@ -31,10 +31,13 @@ import datetime
 import time
 localstart = datetime.datetime.fromtimestamp(start)
 utcstart = datetime.datetime.utcfromtimestamp(start)
-title = "starting on :\nUTC {}\n{} {}".format(utcstart,time.tzname[0],localstart)
+title = f"starting on :\nUTC {utcstart}\n{tzname[0]} {localstart}"
+figure = plt.figure(figsize = (10, 10))
+matplotlib.rc('font', size=8)
 plt.subplot(111)
 plt.title(title)
 plt.ylabel("outdoor Temp °C")
 plt.xlabel("time in hours")
 plt.plot(Text)
 plt.show()
+figure.savefig(f"feed_{feed_nb}.png")
