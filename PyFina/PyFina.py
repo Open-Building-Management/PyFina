@@ -1,20 +1,23 @@
-import numpy as np
+"""pyfina module"""
+
 import struct
 import os
 import math
 
-def trim(id, dir, limit=100):
+import numpy as np
+
+def trim(feed_id, data_dir, limit=100):
     """
     checks and removes anomalies (values above a threshold limit, eg 100)
-    id: feed number
-    dir: feed path (eg /var/opt/emoncms/phpfina)
+    feed_id: feed number
+    data_dir: feed path (eg /var/opt/emoncms/phpfina)
     limit: threshold we don't want to exceed
     """
-    meta = getMeta(id, dir)
+    meta = getMeta(feed_id, data_dir)
     pos = 0
     i = 0
     nbn = 0
-    with open(f"{dir}/{id}.dat", "rb+") as ts:
+    with open(f"{data_dir}/{feed_id}.dat", "rb+") as ts:
         while pos <= meta["npoints"]:
             ts.seek(pos*4, 0)
             hexa = ts.read(4)
@@ -38,17 +41,15 @@ def trim(id, dir, limit=100):
         print(f"{i} anomaly(ies)")
         print(f"{nbn} nan")
 
-def getMeta(id, dir):
+def getMeta(feed_id, data_dir):
     """
     decoding the .meta file
-
-    id (4 bytes, Unsigned integer)
+    feed_id (4 bytes, Unsigned integer)
     npoints (4 bytes, Unsigned integer, Legacy : use instead filesize//4 )
     interval (4 bytes, Unsigned integer)
     start_time (4 bytes, Unsigned integer)
-
     """
-    with open("{}/{}.meta".format(dir,id),"rb") as f:
+    with open(f"{data_dir}/{feed_id}.meta","rb") as f:
         f.seek(8,0)
         hexa = f.read(8)
         aa= bytearray(hexa)
@@ -58,25 +59,23 @@ def getMeta(id, dir):
             print("corrupted meta - aborting")
             return False
     meta = {
-             "interval":decoded[0],
-             "start_time":decoded[1],
-             "npoints":os.path.getsize("{}/{}.dat".format(dir,id))//4
-           }
+        "interval": decoded[0],
+        "start_time": decoded[1],
+        "npoints": os.path.getsize(f"{data_dir}/{feed_id}.dat") // 4
+    }
     return meta
 
 class PyFina(np.ndarray):
-
-    def __new__(cls, id, dir, start, step, npts, remove_nan=True):
-        meta = getMeta(id, dir)
+    """ pyfina class."""
+    def __new__(cls, feed_id, data_dir, start, step, npts, remove_nan=True):
+        meta = getMeta(feed_id, data_dir)
         if not meta:
-            return
-        """
-        decoding and sampling the .dat file
-        values are 32 bit floats, stored on 4 bytes
-        to estimate value(time), position in the dat file is calculated as follow :
-        pos = (time - meta["start_time"]) // meta["interval"]
-        Nota : no NAN value - if a NAN is detected, the algorithm will fetch the first non NAN value in the future
-        """
+            return None
+        # decoding and sampling the .dat file
+        # values are 32 bit floats, stored on 4 bytes
+        # to estimate value(time), position in the dat file is calculated as follow :
+        # pos = (time - meta["start_time"]) // meta["interval"]
+        # Nota : if remove_nan is True and a NAN is detected, the algorithm takes previous value
         obj = np.zeros(npts).view(cls)
         raw_obj = np.empty(npts)
 
@@ -84,11 +83,11 @@ class PyFina(np.ndarray):
         time = start
         i = 0
         nb_nan = 0
-        with open(f"{dir}/{id}.dat", "rb") as ts:
+        with open(f"{data_dir}/{feed_id}.dat", "rb") as ts:
             while time < end:
                 time = start + step * i
                 pos = (time - meta["start_time"]) // meta["interval"]
-                if pos >=0 and pos < meta["npoints"]:
+                if 0 <= pos < meta["npoints"]:
                     try:
                         #print(f"trying to find point {i} going to index {pos}")
                         ts.seek(pos*4, 0)
@@ -116,11 +115,10 @@ class PyFina(np.ndarray):
             first_non_nan_value = raw_obj[finiteness_obj][0]
             if starting_by_nan and remove_nan:
                 obj[:first_non_nan_index] = np.ones(first_non_nan_index) * first_non_nan_value
-        """
-        storing the "signature" of the "sampled" feed
-        """
+        # storing the "signature" of the "sampled" feed
         obj.start = start
         obj.step = step
+        obj.nb_nan = nb_nan
         obj.first_non_nan_value = first_non_nan_value
         obj.first_non_nan_index = first_non_nan_index
         obj.starting_by_nan = starting_by_nan
@@ -129,8 +127,8 @@ class PyFina(np.ndarray):
     def __array_finalize__(self, obj):
         if obj is None:
             return
-        self.start = getattr(obj, 'start', None)
-        self.step = getattr(obj, 'step', None)
+        self.start = getattr(obj, 'start', None)   # pylint: disable=W0201
+        self.step = getattr(obj, 'step', None)  # pylint: disable=W0201
 
     def timescale(self):
         """

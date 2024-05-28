@@ -1,28 +1,26 @@
 """test : open feed and plot image."""
 
 import datetime
+import time
+
 import matplotlib
 import matplotlib.pylab as plt
+from multigraph import check_starting_nan
 from PyFina import getMeta, PyFina
-import time
-import urllib.request as request
 
-feed_nb = 1
-dir = "./datas"
-meta = getMeta(feed_nb, dir)
+FEED_NB = 1
+DATA_DIR = "./datas"
+meta = getMeta(FEED_NB, DATA_DIR)
 print(meta)
-step = 3600
+STEP = 3600
 start = meta["start_time"]
-window = 8 * 24 * 3600
 length = meta["npoints"] * meta["interval"]
-if window > length:
-    window = length
-nbpts = window // step
-Text = PyFina(feed_nb, dir, start, step, nbpts)
+WINDOW = min(8 * 24 * 3600, length)
 
-if Text.starting_by_nan:
-    print(f"first non nan value {Text.first_non_nan_value}")
-    print(f"at index {Text.first_non_nan_index}")        
+nbpts = WINDOW // STEP
+temp_ext = PyFina(FEED_NB, DATA_DIR, start, STEP, nbpts)
+
+check_starting_nan("température extérieure", temp_ext)
 
 localstart = datetime.datetime.fromtimestamp(start)
 utcstart = datetime.datetime.utcfromtimestamp(start)
@@ -33,5 +31,5 @@ plt.subplot(111)
 plt.title(title)
 plt.ylabel("outdoor Temp °C")
 plt.xlabel("time in hours")
-plt.plot(Text)
-figure.savefig(f"feed_{feed_nb}.png")
+plt.plot(temp_ext)
+figure.savefig(f"feed_{FEED_NB}.png")
