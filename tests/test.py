@@ -1,6 +1,10 @@
-from PyFina import getMeta, PyFina
+"""test : open feed and plot image."""
+
+import datetime
 import matplotlib
 import matplotlib.pylab as plt
+from PyFina import getMeta, PyFina
+import time
 import urllib.request as request
 
 feed_nb = 1
@@ -27,11 +31,10 @@ if window > length:
 nbpts = window // step
 Text = PyFina(feed_nb,dir,start,step,nbpts)
 
-import datetime
-import time
+
 localstart = datetime.datetime.fromtimestamp(start)
 utcstart = datetime.datetime.utcfromtimestamp(start)
-title = f"starting on :\nUTC {utcstart}\n{tzname[0]} {localstart}"
+title = f"starting on :\nUTC {utcstart}\n{time.tzname[0]} {localstart}"
 figure = plt.figure(figsize = (10, 10))
 matplotlib.rc('font', size=8)
 plt.subplot(111)
