@@ -66,7 +66,7 @@ def getMeta(id, dir):
 
 class PyFina(np.ndarray):
 
-    def __new__(cls, id, dir, start, step, npts):
+    def __new__(cls, id, dir, start, step, npts, remove_nan=True):
         meta = getMeta(id, dir)
         if not meta:
             return
@@ -79,10 +79,12 @@ class PyFina(np.ndarray):
         """
         verbose = False
         obj = np.zeros(npts).view(cls)
+        raw_obj = np.zeros(npts)
 
         end = start + (npts-1) * step
         time = start
         i = 0
+        nb_nan = 0
         with open("{}/{}.dat".format(dir,id), "rb") as ts:
             while time < end:
                 time = start + step * i
@@ -94,33 +96,31 @@ class PyFina(np.ndarray):
                     aa= bytearray(hexa)
                     if len(aa)==4:
                       value=struct.unpack('<f', aa)[0]
-                      if not math.isnan(value):
-                          obj[i] = value
-                      else:
-                          if verbose:
-                              print("NAN at pos {} uts {}".format(pos, meta["start_time"]+pos*meta["interval"]))
-                          j=1
-                          while True:
-                              #print(j)
-                              ramble=(pos+j)*4
-                              ts.seek(ramble, 0)
-                              hexa = ts.read(4)
-                              aa= bytearray(hexa)
-                              value=struct.unpack('<f', aa)[0]
-                              if math.isnan(value):
-                                  j+=1
-                              else:
-                                  break
-                          obj[i] = value
+                      obj[i] = value
+                      raw_obj[i] = value
+                      if remove_nan and np.isnan(value):
+                          nb_nan += 1
+                          obj[i] = obj[i-1]
                     else:
                       print("unpacking problem {} len is {} position is {}".format(i,len(aa),pos))
                 i += 1
+        first_non_nan_value = -1
+        first_non_nan_index = -1
+        if nb_nan < npts:
+            finiteness_obj = np.isfinite(raw_obj)
+            first_non_nan_index = np.where(finiteness_obj == True)[0][0]
+            first_non_nan_value = raw_obj[finiteness_obj][0]
+        starting_by_nan = np.isnan(raw_obj[0])
+        if starting_by_nan and remove_nan:
+            obj[:first_non_nan_index] = np.ones(first_non_nan_index) * first_non_nan_value
         """
         storing the "signature" of the "sampled" feed
         """
         obj.start = start
         obj.step = step
-
+        obj.first_non_nan_value = first_non_nan_value
+        obj.first_non_nan_index = first_non_nan_index
+        obj.starting_by_nan = starting_by_nan
         return obj
 
     def __array_finalize__(self, obj):
