@@ -25,7 +25,9 @@ jobs:
     - name: Running tests
       run: |
         cd tests
-        python3 test.py
+        for pythonfile in *.py; do
+            python3 pythonfile
+        done
         ls -al
         mkdir figures
         mv *.png figures/
