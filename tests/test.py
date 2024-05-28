@@ -4,7 +4,7 @@ import datetime
 import time
 
 import matplotlib
-import matplotlib.pylab as plt
+import matplotlib.pyplot as plt
 from multigraph import check_starting_nan
 from PyFina import getMeta, PyFina
 

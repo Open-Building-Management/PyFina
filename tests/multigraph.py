@@ -5,7 +5,7 @@ import random
 import time
 
 import matplotlib
-import matplotlib.pylab as plt
+import matplotlib.pyplot as plt
 from PyFina import getMeta, PyFina
 
 # télécharger le fichier contenant les données de Marc Bloch 2021
