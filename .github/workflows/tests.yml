@@ -25,6 +25,8 @@ jobs:
     - name: Running tests
       run: |
         cd tests
+        tar -gz tests/*.tar.gz
+        ls -al tests
         for pythonfile in *.py; do
             python3 $pythonfile
         done
