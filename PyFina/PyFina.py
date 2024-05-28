@@ -13,8 +13,8 @@ def trim(id, dir, limit=100):
     meta = getMeta(id, dir)
     pos = 0
     i = 0
-    nbn =0
-    with open("{}/{}.dat".format(dir, id), "rb+") as ts:
+    nbn = 0
+    with open(f"{dir}/{id}.dat", "rb+") as ts:
         while pos <= meta["npoints"]:
             ts.seek(pos*4, 0)
             hexa = ts.read(4)
@@ -24,19 +24,19 @@ def trim(id, dir, limit=100):
                 if math.isnan(value):
                     nbn +=1
                 elif value > limit:
-                    print("anomaly detected at {} : {}".format(pos, value))
+                    print(f"anomaly detected at {pos} : {value}")
                     i += 1
                     nv = struct.pack('<f', float('nan'))
                     try:
-                        ts.seek(pos*4,0)
+                        ts.seek(pos*4, 0)
                         ts.write(nv)
                     except Exception as e:
                         print(e)
                     finally:
                         print("4 bytes written")
             pos +=1
-        print("{} anomaly(ies)".format(i))
-        print("{} nan".format(nbn))
+        print(f"{i} anomaly(ies)")
+        print(f"{nbn} nan")
 
 def getMeta(id, dir):
     """
