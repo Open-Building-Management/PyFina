@@ -8,19 +8,8 @@ import time
 import urllib.request as request
 
 feed_nb = 1
-
-def retrieve(feed_nb,extension):
-    file_name = f"{feed_nb}.{extension}"
-    url = f"https://raw.githubusercontent.com/Open-Building-Management/PyFina/master/tests/datas/{file_name}"
-    request.urlretrieve(url, file_name)
-print("downloading some datas for testing....")
-retrieve(feed_nb,"dat")
-retrieve(feed_nb,"meta")
-
-# feed storage on a standard emoncms server
-# dir = "/var/opt/emoncms/phpfina"
-dir = "."
-meta = getMeta(feed_nb,dir)
+dir = "./datas"
+meta = getMeta(feed_nb, dir)
 print(meta)
 step = 3600
 start = meta["start_time"]
@@ -29,7 +18,7 @@ length = meta["npoints"] * meta["interval"]
 if window > length:
     window = length
 nbpts = window // step
-Text = PyFina(feed_nb,dir,start,step,nbpts)
+Text = PyFina(feed_nb, dir, start, step, nbpts)
 
 
 localstart = datetime.datetime.fromtimestamp(start)
