@@ -10,7 +10,7 @@ from PyFina import getMeta, PyFina
 
 # télécharger le fichier contenant les données de Marc Bloch 2021
 # puis lancer tar -xvf pour décompresser
-data_dir = "phpfina"
+DATA_DIR = "phpfina"
 feeds = {
     "Text" : 5,
     "TziqNord": 8,
@@ -19,10 +19,10 @@ feeds = {
     "TretNord": 22,
     "pompeNord": 23
 }
-step = 3600
-verbose = False
+STEP = 3600
+VERBOSE = False
 # episode length : 8 days !!
-episode_length = 8 * 24 * 3600
+EPISODE_LENGTH = 8 * 24 * 3600
 
 def analyse():
     """
@@ -31,9 +31,9 @@ def analyse():
     """
     starts = []
     ends = []
-    for f in feeds:
-        meta = getMeta(feeds[f], data_dir)
-        if verbose:
+    for _, feed_nb in feeds.items():
+        meta = getMeta(feed_nb, DATA_DIR)
+        if VERBOSE:
             print(meta)
         start = meta["start_time"]
         length = meta["npoints"] * meta["interval"]
@@ -43,12 +43,10 @@ def analyse():
     start = max(starts)
     end = min(ends)
     length = end - start
-    nbpts = episode_length // step
-    if episode_length > length:
-        nbpts = length // step
+    nbpts = EPISODE_LENGTH // STEP
+    if EPISODE_LENGTH > length:
+        nbpts = length // STEP
     return start, end, nbpts
-
-start, end, nbpts = analyse()
 
 def check_starting_nan(feed_name, feed):
     """check if feed is starting by nan"""
@@ -58,13 +56,13 @@ def check_starting_nan(feed_name, feed):
         message = f"{message} at index {feed.first_non_nan_index}"
         print(message)
 
-def generate_episode(start_ts):
+def generate_episode(start_ts, nbpts):
     """visualise un épisode commencant à start_ts"""
-    temp_ext = PyFina(feeds["Text"], data_dir, start_ts, step, nbpts)
-    temp_ziq_nord = PyFina(feeds["TziqNord"], data_dir, start_ts, step, nbpts)
-    temp_tec_nord = PyFina(feeds["TtecNord"], data_dir, start_ts, step, nbpts)
-    temp_dep_nord = PyFina(feeds["TdepNord"], data_dir, start_ts, step, nbpts)
-    temp_ret_nord = PyFina(feeds["TretNord"], data_dir, start_ts, step, nbpts)
+    temp_ext = PyFina(feeds["Text"], DATA_DIR, start_ts, STEP, nbpts)
+    temp_ziq_nord = PyFina(feeds["TziqNord"], DATA_DIR, start_ts, STEP, nbpts)
+    temp_tec_nord = PyFina(feeds["TtecNord"], DATA_DIR, start_ts, STEP, nbpts)
+    temp_dep_nord = PyFina(feeds["TdepNord"], DATA_DIR, start_ts, STEP, nbpts)
+    temp_ret_nord = PyFina(feeds["TretNord"], DATA_DIR, start_ts, STEP, nbpts)
     feed_objects = {
         "Text": temp_ext,
         "TziqNord": temp_ziq_nord,
@@ -97,11 +95,15 @@ def generate_episode(start_ts):
     plt.legend(loc='upper right')
     figure.savefig(f"bloch_{start_ts}.png")
 
-if (end - episode_length) > start :
-    for _ in range(10):
-        start_ts = random.randrange(start, end - episode_length)
-        print(start_ts)
-        generate_episode(start_ts)
-else :
-    print(start)
-    generate_episode(start)
+
+if __name__ == "__main__":
+    common_start, common_end, common_nbpts = analyse()
+
+    if (common_end - EPISODE_LENGTH) > common_start :
+        for _ in range(10):
+            start_ts_ep = random.randrange(common_start, common_end - EPISODE_LENGTH)
+            print(start_ts_ep)
+            generate_episode(ts_start_ep, common_nbpts)
+    else :
+        print(common_start)
+    generate_episode(common_start, common_nbpts)
