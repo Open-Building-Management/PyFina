@@ -23,5 +23,14 @@ jobs:
         python3 -m pip list
     - name: Running tests
       run: |
+        cd tests
+        python3 test.py
         pwd
         ls -al
+        mkdir figures
+        mv *.png figures/
+    - name: Upload results
+      uses: actions/upload-artifact@v1
+      with:
+        name: figures
+        path: 'figures'
