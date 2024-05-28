@@ -13,13 +13,16 @@ meta = getMeta(feed_nb, dir)
 print(meta)
 step = 3600
 start = meta["start_time"]
-window = 8*24*3600
+window = 8 * 24 * 3600
 length = meta["npoints"] * meta["interval"]
 if window > length:
     window = length
 nbpts = window // step
 Text = PyFina(feed_nb, dir, start, step, nbpts)
 
+if Text.starting_by_nan:
+    print(f"first non nan value {Text.first_non_nan_value}")
+    print(f"at index {Text.first_non_nan_index}")        
 
 localstart = datetime.datetime.fromtimestamp(start)
 utcstart = datetime.datetime.utcfromtimestamp(start)
