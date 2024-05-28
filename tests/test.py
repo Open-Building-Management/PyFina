@@ -22,7 +22,7 @@ Text = PyFina(feed_nb, dir, start, step, nbpts)
 
 if Text.starting_by_nan:
     print(f"first non nan value {Text.first_non_nan_value}")
-    print(f"at index {Text.first_non_nan_index}")        
+    print(f"at index {Text.first_non_nan_index}")
 
 localstart = datetime.datetime.fromtimestamp(start)
 utcstart = datetime.datetime.utcfromtimestamp(start)
