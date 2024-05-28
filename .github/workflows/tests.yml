@@ -25,7 +25,7 @@ jobs:
     - name: Running tests
       run: |
         cd tests
-        tar -xvf tests/*.tar.gz
+        tar -xvf datas/*.tar.gz
         for pythonfile in *.py; do
             python3 $pythonfile
         done
