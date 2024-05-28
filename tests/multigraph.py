@@ -1,14 +1,15 @@
 """produces some snapshots opening the bloch dataset."""
 
 import datetime
-import matplotlib
-import matplotlib.pylab as plt
-from PyFina import getMeta, PyFina
 import random
 import time
 
+import matplotlib
+import matplotlib.pylab as plt
+from PyFina import getMeta, PyFina
+
 # télécharger le fichier contenant les données de Marc Bloch 2021
-# tar -xvf in the current folder
+# puis lancer tar -xvf pour décompresser
 dir = "phpfina"
 feeds = {
     "Text" : 5,
@@ -74,7 +75,7 @@ def generate_episode(start_ts):
     plt.plot(TziqNord, label = "TziqNord", color="green")
     plt.plot(TtecNord, label = "TtecNord",  color="orange")
     plt.legend(loc='upper right')
-    ax3 = plt.subplot(212, sharex=ax1)
+    plt.subplot(212, sharex=ax1)
     plt.ylabel("hot water Temp °C")
     plt.plot(TdepNord, label = "TdepNord")
     plt.plot(TretNord, label = "TretNord")
