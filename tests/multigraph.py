@@ -1,17 +1,27 @@
-from PyFina import getMeta, PyFina
-import matplotlib.pylab as plt
+"""produces some snapshots opening the bloch dataset."""
+
 import datetime
-import time
+import matplotlib
+import matplotlib.pylab as plt
+from PyFina import getMeta, PyFina
 import random
+import time
 
 # télécharger le fichier contenant les données de Marc Bloch 2021
-# unzip your files in C:/var/opt/emoncms
-dir = "C:/var/opt/emoncms/phpfina"
-feeds = { "Text" : 5, "TziqNord": 8, "TtecNord": 11, "TdepNord": 21, "TretNord": 22, "pompeNord": 23}
+# tar -xvf in the current folder
+dir = "phpfina"
+feeds = {
+    "Text" : 5,
+    "TziqNord": 8,
+    "TtecNord": 11,
+    "TdepNord": 21,
+    "TretNord": 22,
+    "pompeNord": 23
+}
 step = 3600
 verbose = False
 # epL : episode length : 8 days !!
-epL = 8*24*3600
+epL = 8 * 24 * 3600
 
 def analyse():
     """
@@ -39,7 +49,7 @@ def analyse():
 
 start, end, nbpts = analyse()
 
-def viewEpisode(start_ts):
+def generate_episode(start_ts):
     """
     permet de visualiser un épisode commencant à start_ts
     """
@@ -48,11 +58,11 @@ def viewEpisode(start_ts):
     TtecNord = PyFina(feeds["TtecNord"],dir,start_ts,step,nbpts)
     TdepNord = PyFina(feeds["TdepNord"],dir,start_ts,step,nbpts)
     TretNord = PyFina(feeds["TretNord"],dir,start_ts,step,nbpts)
-
     localstart = datetime.datetime.fromtimestamp(start_ts)
     utcstart = datetime.datetime.utcfromtimestamp(start_ts)
-    title = "starting on : UTC {}\n{} {}".format(utcstart,time.tzname[0],localstart)
-
+    title = f"starting on : UTC {utcstart}\n{time.tzname[0]} {localstart}"
+    figure = plt.figure(figsize = (20, 10))
+    matplotlib.rc('font', size=8)
     ax1 = plt.subplot(211)
     plt.title(title)
     plt.ylabel("outdoor Temp °C")
@@ -69,40 +79,11 @@ def viewEpisode(start_ts):
     plt.plot(TdepNord, label = "TdepNord")
     plt.plot(TretNord, label = "TretNord")
     plt.legend(loc='upper right')
-    plt.show()
-
-import signal
-
-class Loop:
-    """
-    visualisation des épisodes
-    """
-    def __init__(self):
-        self._exit = False
-
-    def run(self):
-        """
-        boucle
-        """
-        signal.signal(signal.SIGINT, self._sigint_handler)
-        signal.signal(signal.SIGTERM, self._sigint_handler)
-        while not self._exit:
-            start_ts = random.randrange(start, end - epL)
-            viewEpisode(start_ts)
-
-    def _sigint_handler(self, signal, frame):
-        """
-        Réception du signal de fermeture
-        """
-        print("signal de fermeture reçu")
-        self._exit = True
-
-    def close(self):
-        print("fermeture effectuée")
+    figure.savefig(f"bloch_{start_ts}.png")
 
 if end - epL > start :
-    boucle = Loop()
-    boucle.run()
-    boucle.close()
+    for _ in range(10):
+        start_ts = random.randrange(start, end - epL)
+        generate_episode(start_ts)
 else :
-    viewEpisode(start)
+    generate_episode(start)
