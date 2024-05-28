@@ -28,11 +28,12 @@ jobs:
         ls -al
         mkdir figures
         mv *.png figures/
+        cd figures
         here=$(pwd)
         echo $here
-        echo "figures_path=$here/figures" >> "$GITHUB_ENV"
+        echo "figpath=$here" >> "$GITHUB_ENV"
     - name: Upload results
       uses: actions/upload-artifact@v1
       with:
         name: figures
-        path: $figures_path
+        path: $figpath
