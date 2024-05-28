@@ -103,7 +103,7 @@ if __name__ == "__main__":
         for _ in range(10):
             start_ts_ep = random.randrange(common_start, common_end - EPISODE_LENGTH)
             print(start_ts_ep)
-            generate_episode(ts_start_ep, common_nbpts)
+            generate_episode(start_ts_ep, common_nbpts)
     else :
         print(common_start)
     generate_episode(common_start, common_nbpts)
