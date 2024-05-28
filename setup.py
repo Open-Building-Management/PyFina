@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="PyFina",
-    version="0.0.3",
+    version="0.0.4",
     author="Alexandre CUER",
     author_email="alexandre.cuer@wanadoo.fr",
     description="A numpy subclass to read emoncms PHPFINA feeds as numpy array",
