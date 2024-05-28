@@ -25,12 +25,14 @@ jobs:
       run: |
         cd tests
         python3 test.py
-        pwd
         ls -al
         mkdir figures
         mv *.png figures/
+        here=$(pwd)
+        echo $here
+        echo "figures_path=$here/figures" >> "$GITHUB_ENV"
     - name: Upload results
       uses: actions/upload-artifact@v1
       with:
         name: figures
-        path: 'figures'
+        path: $figures_path
