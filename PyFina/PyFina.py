@@ -78,40 +78,44 @@ class PyFina(np.ndarray):
         Nota : no NAN value - if a NAN is detected, the algorithm will fetch the first non NAN value in the future
         """
         obj = np.zeros(npts).view(cls)
-        raw_obj = np.zeros(npts)
+        raw_obj = np.empty(npts)
 
         end = start + (npts-1) * step
         time = start
         i = 0
         nb_nan = 0
-        with open("{}/{}.dat".format(dir,id), "rb") as ts:
+        with open(f"{dir}/{id}.dat", "rb") as ts:
             while time < end:
                 time = start + step * i
                 pos = (time - meta["start_time"]) // meta["interval"]
                 if pos >=0 and pos < meta["npoints"]:
-                    #print("trying to find point {} going to index {}".format(i,pos))
-                    ts.seek(pos*4, 0)
-                    hexa = ts.read(4)
-                    aa= bytearray(hexa)
-                    if len(aa)==4:
-                      value=struct.unpack('<f', aa)[0]
-                      obj[i] = value
-                      raw_obj[i] = value
-                      if remove_nan and np.isnan(value):
-                          nb_nan += 1
-                          obj[i] = obj[i-1]
+                    try:
+                        #print(f"trying to find point {i} going to index {pos}")
+                        ts.seek(pos*4, 0)
+                        hexa = ts.read(4)
+                        aa= bytearray(hexa)
+                    except Exception as e:
+                        print(f"error during file operation {e}")
                     else:
-                      print("unpacking problem {} len is {} position is {}".format(i,len(aa),pos))
+                        if len(aa)==4:
+                            value = struct.unpack('<f', aa)[0]
+                            obj[i] = value
+                            raw_obj[i] = value
+                            if remove_nan and np.isnan(value):
+                                nb_nan += 1
+                                obj[i] = obj[i-1]
+                        else:
+                            print(f"unpacking problem {i} len is {len(aa)} position is {pos}")
                 i += 1
         first_non_nan_value = -1
         first_non_nan_index = -1
+        starting_by_nan = np.isnan(raw_obj[0])
         if nb_nan < npts:
             finiteness_obj = np.isfinite(raw_obj)
             first_non_nan_index = np.where(finiteness_obj)[0][0]
             first_non_nan_value = raw_obj[finiteness_obj][0]
-        starting_by_nan = np.isnan(raw_obj[0])
-        if starting_by_nan and remove_nan:
-            obj[:first_non_nan_index] = np.ones(first_non_nan_index) * first_non_nan_value
+            if starting_by_nan and remove_nan:
+                obj[:first_non_nan_index] = np.ones(first_non_nan_index) * first_non_nan_value
         """
         storing the "signature" of the "sampled" feed
         """
