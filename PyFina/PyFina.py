@@ -77,7 +77,6 @@ class PyFina(np.ndarray):
         pos = (time - meta["start_time"]) // meta["interval"]
         Nota : no NAN value - if a NAN is detected, the algorithm will fetch the first non NAN value in the future
         """
-        verbose = False
         obj = np.zeros(npts).view(cls)
         raw_obj = np.zeros(npts)
 
@@ -108,7 +107,7 @@ class PyFina(np.ndarray):
         first_non_nan_index = -1
         if nb_nan < npts:
             finiteness_obj = np.isfinite(raw_obj)
-            first_non_nan_index = np.where(finiteness_obj == True)[0][0]
+            first_non_nan_index = np.where(if finiteness_obj:)[0][0]
             first_non_nan_value = raw_obj[finiteness_obj][0]
         starting_by_nan = np.isnan(raw_obj[0])
         if starting_by_nan and remove_nan:
@@ -124,7 +123,8 @@ class PyFina(np.ndarray):
         return obj
 
     def __array_finalize__(self, obj):
-        if obj is None: return
+        if obj is None:
+            return
         self.start = getattr(obj, 'start', None)
         self.step = getattr(obj, 'step', None)
 
