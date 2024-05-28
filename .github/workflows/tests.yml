@@ -19,10 +19,8 @@ jobs:
     - name: Install dependencies
       run: |
         python3 -m pip install --upgrade pip
-        python3 -m pip install matplotlib
-        python3 -m pip install numpy
-        python3 setup.py sdist
         python3 -m pip install -e ./
+        python3 -m pip list
     - name: Running tests
       run: |
         pwd
