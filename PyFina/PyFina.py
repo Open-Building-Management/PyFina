@@ -13,8 +13,8 @@ def trim(id, dir, limit=100):
     meta = getMeta(id, dir)
     pos = 0
     i = 0
-    nbn =0
-    with open("{}/{}.dat".format(dir, id), "rb+") as ts:
+    nbn = 0
+    with open(f"{dir}/{id}.dat", "rb+") as ts:
         while pos <= meta["npoints"]:
             ts.seek(pos*4, 0)
             hexa = ts.read(4)
@@ -24,19 +24,19 @@ def trim(id, dir, limit=100):
                 if math.isnan(value):
                     nbn +=1
                 elif value > limit:
-                    print("anomaly detected at {} : {}".format(pos, value))
+                    print(f"anomaly detected at {pos} : {value}")
                     i += 1
                     nv = struct.pack('<f', float('nan'))
                     try:
-                        ts.seek(pos*4,0)
+                        ts.seek(pos*4, 0)
                         ts.write(nv)
                     except Exception as e:
                         print(e)
                     finally:
                         print("4 bytes written")
             pos +=1
-        print("{} anomaly(ies)".format(i))
-        print("{} nan".format(nbn))
+        print(f"{i} anomaly(ies)")
+        print(f"{nbn} nan")
 
 def getMeta(id, dir):
     """
@@ -66,7 +66,7 @@ def getMeta(id, dir):
 
 class PyFina(np.ndarray):
 
-    def __new__(cls, id, dir, start, step, npts):
+    def __new__(cls, id, dir, start, step, npts, remove_nan=True):
         meta = getMeta(id, dir)
         if not meta:
             return
@@ -77,54 +77,58 @@ class PyFina(np.ndarray):
         pos = (time - meta["start_time"]) // meta["interval"]
         Nota : no NAN value - if a NAN is detected, the algorithm will fetch the first non NAN value in the future
         """
-        verbose = False
         obj = np.zeros(npts).view(cls)
+        raw_obj = np.empty(npts)
 
         end = start + (npts-1) * step
         time = start
         i = 0
-        with open("{}/{}.dat".format(dir,id), "rb") as ts:
+        nb_nan = 0
+        with open(f"{dir}/{id}.dat", "rb") as ts:
             while time < end:
                 time = start + step * i
                 pos = (time - meta["start_time"]) // meta["interval"]
                 if pos >=0 and pos < meta["npoints"]:
-                    #print("trying to find point {} going to index {}".format(i,pos))
-                    ts.seek(pos*4, 0)
-                    hexa = ts.read(4)
-                    aa= bytearray(hexa)
-                    if len(aa)==4:
-                      value=struct.unpack('<f', aa)[0]
-                      if not math.isnan(value):
-                          obj[i] = value
-                      else:
-                          if verbose:
-                              print("NAN at pos {} uts {}".format(pos, meta["start_time"]+pos*meta["interval"]))
-                          j=1
-                          while True:
-                              #print(j)
-                              ramble=(pos+j)*4
-                              ts.seek(ramble, 0)
-                              hexa = ts.read(4)
-                              aa= bytearray(hexa)
-                              value=struct.unpack('<f', aa)[0]
-                              if math.isnan(value):
-                                  j+=1
-                              else:
-                                  break
-                          obj[i] = value
+                    try:
+                        #print(f"trying to find point {i} going to index {pos}")
+                        ts.seek(pos*4, 0)
+                        hexa = ts.read(4)
+                        aa= bytearray(hexa)
+                    except Exception as e:
+                        print(f"error during file operation {e}")
                     else:
-                      print("unpacking problem {} len is {} position is {}".format(i,len(aa),pos))
+                        if len(aa)==4:
+                            value = struct.unpack('<f', aa)[0]
+                            obj[i] = value
+                            raw_obj[i] = value
+                            if remove_nan and np.isnan(value):
+                                nb_nan += 1
+                                obj[i] = obj[i-1]
+                        else:
+                            print(f"unpacking problem {i} len is {len(aa)} position is {pos}")
                 i += 1
+        first_non_nan_value = -1
+        first_non_nan_index = -1
+        starting_by_nan = np.isnan(raw_obj[0])
+        if nb_nan < npts:
+            finiteness_obj = np.isfinite(raw_obj)
+            first_non_nan_index = np.where(finiteness_obj)[0][0]
+            first_non_nan_value = raw_obj[finiteness_obj][0]
+            if starting_by_nan and remove_nan:
+                obj[:first_non_nan_index] = np.ones(first_non_nan_index) * first_non_nan_value
         """
         storing the "signature" of the "sampled" feed
         """
         obj.start = start
         obj.step = step
-
+        obj.first_non_nan_value = first_non_nan_value
+        obj.first_non_nan_index = first_non_nan_index
+        obj.starting_by_nan = starting_by_nan
         return obj
 
     def __array_finalize__(self, obj):
-        if obj is None: return
+        if obj is None:
+            return
         self.start = getattr(obj, 'start', None)
         self.step = getattr(obj, 'step', None)
 
