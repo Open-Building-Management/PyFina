@@ -1,9 +1,10 @@
 """pyfina tools and base class"""
 
+from __future__ import annotations
 import logging
-import struct
-import os
 import math
+import os
+import struct
 
 from typing import Literal
 
