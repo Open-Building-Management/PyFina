@@ -6,7 +6,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setuptools.setup(
     name="PyFina",
-    version="0.0.5",
+    version="0.0.6",
     author="Alexandre CUER",
     author_email="alexandre.cuer@wanadoo.fr",
     description="A numpy subclass to read emoncms PHPFINA feeds as numpy array",
@@ -23,8 +23,7 @@ setuptools.setup(
     ],
     packages=setuptools.find_packages(),
     install_requires=[
-        'numpy',
-        'matplotlib'
+        'numpy'
     ],
     python_requires=">=3.6",
 )
