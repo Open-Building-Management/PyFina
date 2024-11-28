@@ -145,12 +145,13 @@ class PyFina(np.ndarray):
         starting_by_nan = np.isnan(raw_obj[0])
         if nb_nan < npts:
             finiteness_obj = np.isfinite(raw_obj)
-            first_non_nan_index = np.where(finiteness_obj)[0][0]
-            first_non_nan_value = raw_obj[finiteness_obj][0]
-            if starting_by_nan and remove_nan:
-                obj[:first_non_nan_index] = (
-                    np.ones(first_non_nan_index) * first_non_nan_value
-                )
+            if finiteness_obj.sum() > 0:
+                first_non_nan_index = np.where(finiteness_obj)[0][0]
+                first_non_nan_value = raw_obj[finiteness_obj][0]
+                if starting_by_nan and remove_nan:
+                    obj[:first_non_nan_index] = (
+                        np.ones(first_non_nan_index) * first_non_nan_value
+                    )
         # storing the "signature" of the "sampled" feed
         obj.start = start
         obj.step = step
