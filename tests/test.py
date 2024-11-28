@@ -32,7 +32,7 @@ temp_ext = PyFina(FEED_NB, DATA_DIR, start, STEP, nbpts)
 check_starting_nan("température extérieure", temp_ext)
 
 localstart = datetime.datetime.fromtimestamp(start)
-utcstart = datetime.datetime.utcfromtimestamp(start)
+utcstart = datetime.datetime.fromtimestamp(start, datetime.timezone.utc)
 title = f"starting on :\nUTC {utcstart}\n{time.tzname[0]} {localstart}"
 figure = plt.figure(figsize = (10, 10))
 matplotlib.rc('font', size=8)
