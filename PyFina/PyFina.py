@@ -77,6 +77,7 @@ def getMeta(feed_id: int, data_dir: str) -> Literal[False] | dict[str, int]:
         "start_time": decoded[1],
         "npoints": os.path.getsize(f"{data_dir}/{feed_id}.dat") // 4,
     }
+    meta['end_time'] = meta['start_time'] + (meta['npoints'] * meta['interval'])
     return meta
 
 class PyFina(np.ndarray):
