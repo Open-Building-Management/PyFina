@@ -116,6 +116,12 @@ class PyFina(np.ndarray):
         time = start
         i = 0
         nb_nan = 0
+        # Avoid Reading file if time >= end_time
+        if time >= meta['end_time']:
+            raise ValueError("Error: invalid start value, "
+                             "start must be upper than end time value "
+                             "defined by start_time + (npoints * interval) from meta."
+                            )
         with open(f"{data_dir}/{feed_id}.dat", "rb") as ts:
             while time < end:
                 time = start + step * i
