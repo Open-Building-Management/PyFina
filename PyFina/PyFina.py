@@ -107,10 +107,11 @@ class PyFina(np.ndarray):
         # pos = (time - meta["start_time"]) // meta["interval"]
         # Nota : if remove_nan is True and a NAN is detected, the algorithm takes previous value
         obj = super().__new__(cls, shape=(npts,))
+        obj.fill(np.nan)
         #obj = np.zeros(npts).view(cls)
         pyfina_logger.debug(obj)
         raw_obj = np.empty(npts)
-
+        raw_obj.fill(np.nan)
         end = start + (npts - 1) * step
         time = start
         i = 0
