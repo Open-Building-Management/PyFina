@@ -147,6 +147,9 @@ class PyFina(np.ndarray):
                         else:
                             message = f"unpacking problem {i} len is {len(aa)} position is {pos}"
                             pyfina_logger.error(message)
+                # End reading loop if pos out of bounds
+                else:
+                    time = end
                 i += 1
         first_non_nan_value = -1
         first_non_nan_index = -1
