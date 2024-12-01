@@ -19,6 +19,9 @@ if not os.path.isdir(DATA_DIR):
         "tests",
         "datas"
     )
+    if not os.path.isdir(DATA_DIR):
+        raise FileNotFoundError(f"Could not find data directory in any location: {DATA_DIR}")
+
 meta = getMeta(FEED_NB, DATA_DIR)
 print(meta)
 STEP = 3600
@@ -42,4 +45,5 @@ plt.ylabel("outdoor Temp °C")
 plt.xlabel("time in hours")
 plt.plot(temp_ext)
 figure.savefig(f"feed_{FEED_NB}.png")
-plt.show()
+if os.environ.get('DISPLAY_PLOTS', '').lower() == 'true':
+    plt.show()

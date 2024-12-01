@@ -62,6 +62,9 @@ def getMeta(feed_id: int, data_dir: str) -> Literal[False] | dict[str, int]:
     npoints (4 bytes, Unsigned integer, Legacy : use instead filesize//4 )
     interval (4 bytes, Unsigned integer)
     start_time (4 bytes, Unsigned integer)
+    Returns:
+        dict with keys: interval, start_time, npoints, end_time
+        where end_time is the timestamp of the last data point
     """
     with open(f"{data_dir}/{feed_id}.meta", "rb") as f:
         f.seek(8, 0)
@@ -108,18 +111,16 @@ class PyFina(np.ndarray):
         # Nota : if remove_nan is True and a NAN is detected, the algorithm takes previous value
         obj = super().__new__(cls, shape=(npts,))
         obj.fill(np.nan)
-        #obj = np.zeros(npts).view(cls)
-        pyfina_logger.debug(obj)
         raw_obj = np.empty(npts)
         raw_obj.fill(np.nan)
+        pyfina_logger.debug(obj)
         end = start + (npts - 1) * step
         time = start
         i = 0
         nb_nan = 0
         # Avoid Reading file if time >= end_time
         if time >= meta['end_time']:
-            raise ValueError("Error: invalid start value, "
-                             "start must be upper than end time value "
+            raise ValueError("Error: invalid start value, start must be less than end time value "
                              "defined by start_time + (npoints * interval) from meta."
                             )
         with open(f"{data_dir}/{feed_id}.dat", "rb") as ts:
@@ -149,7 +150,7 @@ class PyFina(np.ndarray):
                             pyfina_logger.error(message)
                 # End reading loop if pos out of bounds
                 else:
-                    time = end
+                    break
                 i += 1
         first_non_nan_value = -1
         first_non_nan_index = -1
