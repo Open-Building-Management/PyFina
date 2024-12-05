@@ -48,7 +48,7 @@ def analyse():
         nbpts = length // STEP
     return start, end, nbpts
 
-def check_starting_nan(feed_name, feed):
+def check_starting_nan(feed_name: str, feed: PyFina):
     """check if feed is starting by nan"""
     print(f"{feed_name} : {feed.nb_nan} nan in the feed")
     if feed.starting_by_nan:
@@ -73,7 +73,7 @@ def generate_episode(start_ts, nbpts):
     for feed_name, feed_object in feed_objects.items():
         check_starting_nan(feed_name, feed_object)
     localstart = datetime.datetime.fromtimestamp(start_ts)
-    utcstart = datetime.datetime.utcfromtimestamp(start_ts)
+    utcstart = datetime.datetime.fromtimestamp(start_ts, datetime.timezone.utc)
     title = f"starting on : UTC {utcstart}\n{time.tzname[0]} {localstart}"
     figure = plt.figure(figsize = (20, 10))
     matplotlib.rc('font', size=8)
