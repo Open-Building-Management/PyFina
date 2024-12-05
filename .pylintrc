@@ -11,3 +11,8 @@ max-branches=35
 max-locals=60
 
 good-names=PyFina,getMeta
+
+[DESIGN]
+
+max-positional-arguments=7
+
