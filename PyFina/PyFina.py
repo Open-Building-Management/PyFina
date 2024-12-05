@@ -62,6 +62,9 @@ def getMeta(feed_id: int, data_dir: str) -> Literal[False] | dict[str, int]:
     npoints (4 bytes, Unsigned integer, Legacy : use instead filesize//4 )
     interval (4 bytes, Unsigned integer)
     start_time (4 bytes, Unsigned integer)
+    Returns:
+        dict with keys: interval, start_time, npoints, end_time
+        where end_time is the timestamp of the last data point
     """
     with open(f"{data_dir}/{feed_id}.meta", "rb") as f:
         f.seek(8, 0)
@@ -77,6 +80,7 @@ def getMeta(feed_id: int, data_dir: str) -> Literal[False] | dict[str, int]:
         "start_time": decoded[1],
         "npoints": os.path.getsize(f"{data_dir}/{feed_id}.dat") // 4,
     }
+    meta['end_time'] = meta['start_time'] + (meta['npoints'] * meta['interval']) - meta['interval']
     return meta
 
 class PyFina(np.ndarray):
@@ -106,14 +110,19 @@ class PyFina(np.ndarray):
         # pos = (time - meta["start_time"]) // meta["interval"]
         # Nota : if remove_nan is True and a NAN is detected, the algorithm takes previous value
         obj = super().__new__(cls, shape=(npts,))
-        #obj = np.zeros(npts).view(cls)
-        pyfina_logger.debug(obj)
+        obj.fill(np.nan)
         raw_obj = np.empty(npts)
-
+        raw_obj.fill(np.nan)
+        pyfina_logger.debug(obj)
         end = start + (npts - 1) * step
         time = start
         i = 0
         nb_nan = 0
+        # Avoid Reading file if time >= end_time
+        if time >= meta['end_time']:
+            raise ValueError("Error: invalid start value, start must be less than end time value "
+                             "defined by start_time + (npoints * interval) from meta."
+                            )
         with open(f"{data_dir}/{feed_id}.dat", "rb") as ts:
             while time < end:
                 time = start + step * i
@@ -139,18 +148,22 @@ class PyFina(np.ndarray):
                         else:
                             message = f"unpacking problem {i} len is {len(aa)} position is {pos}"
                             pyfina_logger.error(message)
+                # End reading loop if pos out of bounds
+                else:
+                    break
                 i += 1
         first_non_nan_value = -1
         first_non_nan_index = -1
         starting_by_nan = np.isnan(raw_obj[0])
         if nb_nan < npts:
             finiteness_obj = np.isfinite(raw_obj)
-            first_non_nan_index = np.where(finiteness_obj)[0][0]
-            first_non_nan_value = raw_obj[finiteness_obj][0]
-            if starting_by_nan and remove_nan:
-                obj[:first_non_nan_index] = (
-                    np.ones(first_non_nan_index) * first_non_nan_value
-                )
+            if finiteness_obj.sum() > 0:
+                first_non_nan_index = np.where(finiteness_obj)[0][0]
+                first_non_nan_value = raw_obj[finiteness_obj][0]
+                if starting_by_nan and remove_nan:
+                    obj[:first_non_nan_index] = (
+                        np.ones(first_non_nan_index) * first_non_nan_value
+                    )
         # storing the "signature" of the "sampled" feed
         obj.start = start
         obj.step = step
