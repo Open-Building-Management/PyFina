@@ -99,8 +99,9 @@ class PyFina(np.ndarray):
         start: int,
         step: int,
         npts: int,
-        remove_nan: bool = True,
+        **kwargs
     ):
+        remove_nan: bool = kwargs.get("remove_nan", True)
         meta = getMeta(feed_id, data_dir)
         if not meta:
             return None
